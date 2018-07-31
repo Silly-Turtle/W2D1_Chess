@@ -1,4 +1,12 @@
 require_relative 'piece.rb'
+require_relative 'null_piece.rb'
+require_relative 'knight.rb'
+require_relative 'bishop.rb'
+require_relative 'rook.rb'
+require_relative 'pawn.rb'
+require_relative 'queen.rb'
+require_relative 'king.rb'
+
 require 'byebug'
 
 class Board
@@ -8,37 +16,41 @@ class Board
     @rows = Array.new(8){ Array.new(8)}
     @white_rook = Piece.new(:white, @rows, [0,4] )
     # @sentinel = NullPiece.new()
+    populate
   end
 
   def [](pos)
     x,y = pos
-    rows[x][y]
+    @rows[x][y]
   end
 
   def []=(pos, val)
+
     x,y = pos
-    rows[pos] = val
+    @rows[x][y] = val
   end
 
   def populate
+    #populate with actual figures
+
+    #populate the rest of the board with NullPiece figures
     @rows.each_index do |row|
       @rows[row].each_index do |tile|
         @rows[row][tile] = NullPiece.new([row, tile])
-
       end
     end
     add_piece(@white_rook, [0, 4])
   end
 
   def move_piece(start_pos, end_pos)
-    if rows[start_pos] == NullPiece
+    if self[start_pos] == NullPiece
       raise "Invalid start position"
     elsif valid_pos?(end_pos) == false
       raise "Invalid end position"
     end
 
-    rows[end_pos] = rows[start_pos]
-    rows[start_pos] = NullPiece
+    self[end_pos] = self[start_pos]
+    self[start_pos] = NullPiece
 
   end
 
@@ -47,7 +59,7 @@ class Board
   end
 
   def add_piece(piece, pos)
-    @rows[pos] = piece
+    self[pos] = piece
   end
 
   def checkmate?(color)
